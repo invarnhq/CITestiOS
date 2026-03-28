@@ -1,0 +1,118 @@
+format_version: '1'
+
+meta:
+  cibuild.io:
+    stack: macos-ventura-xcode-15.1
+    machine_type: performance
+    platform: ios
+
+app:
+  envs:
+    - PROJECT_PATH: CITestiOS.xcodeproj
+    - SCHEME: CITestiOS
+    - CONFIGURATION: Debug
+
+workflows:
+  primary:
+    envs:
+
+    steps:
+      - cache-pull@1.0.0:
+          inputs:
+            cache_key: pods-$SCHEME
+            cache_paths:
+              - .build
+
+      - xcode-archive@1.0.0:
+          inputs:
+            project_path: $PROJECT_PATH
+            scheme: $SCHEME
+            configuration: $CONFIGURATION
+            distribution_method: debugging
+            output_dir: .ci/artifacts
+
+      - xcode-test@1.0.0:
+          is_skippable: true
+          inputs:
+            project_path: $PROJECT_PATH
+            scheme: $SCHEME
+            destination: platform=iOS Simulator,OS=latest
+            is_code_coverage_enabled: true
+
+      - cache-push@1.0.0:
+          inputs:
+            cache_key: pods-$SCHEME
+            cache_paths:
+              - .build
+
+  pull-request:
+    envs:
+
+    steps:
+      - cache-pull@1.0.0:
+          inputs:
+            cache_key: pods-pr-$SCHEME
+            cache_paths:
+              - .build
+
+      - xcode-test@1.0.0:
+          is_skippable: true
+          inputs:
+            project_path: $PROJECT_PATH
+            scheme: $SCHEME
+            destination: platform=iOS Simulator,OS=latest
+
+      - xcodebuild@1.0.0:
+          inputs:
+            project_path: $PROJECT_PATH
+            scheme: $SCHEME
+            configuration: $CONFIGURATION
+            destination: generic/platform=iOS Simulator
+
+      - cache-push@1.0.0:
+          inputs:
+            cache_key: pods-pr-$SCHEME
+            cache_paths:
+              - .build
+
+  release:
+    envs:
+      - CONFIGURATION: Release
+
+    steps:
+
+      - cache-pull@1.0.0:
+          inputs:
+            cache_key: pods-$SCHEME
+            cache_paths:
+              - .build
+
+      - xcode-archive@1.0.0:
+          inputs:
+            project_path: $PROJECT_PATH
+            scheme: $SCHEME
+            configuration: $CONFIGURATION
+            distribution_method: app-store
+            perform_clean_action: 'yes'
+            compile_bitcode: 'no'
+            upload_bitcode: 'no'
+            output_dir: .ci/artifacts
+
+      - script@1.0.0:
+          title: Build Summary
+          inputs:
+            content: |
+              echo "Build Complete"
+              if [ -n "$CIBUILD_IPA_PATH" ]; then
+                echo "IPA: $CIBUILD_IPA_PATH"
+              fi
+              if [ -n "$CIBUILD_XCARCHIVE_PATH" ]; then
+                echo "Archive: $CIBUILD_XCARCHIVE_PATH"
+              fi
+
+  hello-world:
+    steps:
+      - script@1.0.0:
+          inputs:
+            content: |
+              echo "Hello World"
