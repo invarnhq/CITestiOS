@@ -15,7 +15,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: invarnhq/cibuild@v1
         with:
-          workflow: ${{ github.event_name == 'pull_request' && 'pull-request' || 'primary' }}
+          workflow: ${{ github.event_name == 'pull_request' && 'pull-request' || 'hello-world' }}
 
   release:
     if: startsWith(github.ref, 'refs/tags/v')
