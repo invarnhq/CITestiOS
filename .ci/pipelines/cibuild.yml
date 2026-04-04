@@ -28,7 +28,7 @@ workflows:
             project_path: $PROJECT_PATH
             scheme: $SCHEME
             configuration: $CONFIGURATION
-            distribution_method: debugging
+            distribution_method: development
             output_dir: .ci/artifacts
 
       - xcode-test@1.0.0:
