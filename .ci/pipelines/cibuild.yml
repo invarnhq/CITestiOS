@@ -12,6 +12,12 @@ app:
     - SCHEME: CITestiOS
     - CONFIGURATION: Debug
 
+trigger_map:
+  - push_branch: main
+    workflow: primary
+  - pull_request_target_branch: "*"
+    workflow: pull-request
+
 workflows:
   primary:
     envs:
