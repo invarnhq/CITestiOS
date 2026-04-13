@@ -1,0 +1,19 @@
+# Agent: case-compiler (build)
+# Compiles the CITestiOS iOS app using xcodebuild against the CITestiOS.xcodeproj Debug scheme to verify the code builds for the iOS Simulator. Use when you need to confirm Swift/Objective-C code compiles without errors. Does not run tests, lint, or produce a distributable archive — use a dedicated test/lint/archive agent for those.
+# Managed by Invarn — edits from the dashboard will regenerate this file.
+format_version: '1'
+meta:
+  cibuild.io:
+    stack: macos-sequoia-xcode
+    machine_type: standard
+workflows:
+  compile:
+    steps:
+      - script@1.0.0:
+          title: compile
+          inputs:
+            content: >-
+              echo '▸ INVARN_STEP:1:compile'
+
+              xcodebuild -project CITestiOS.xcodeproj -scheme CITestiOS -configuration Debug -destination
+              'generic/platform=iOS Simulator' build
