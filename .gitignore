@@ -1,3 +1,5 @@
 .cibuild-secrets.json
 .ci/.envstore.json
 .ci/keys/
+
+.claude/scheduled_tasks.lock
