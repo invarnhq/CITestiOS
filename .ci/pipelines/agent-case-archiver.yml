@@ -1,0 +1,47 @@
+# Agent: case-archiver (build)
+# Compiles and archives the CITestiOS iOS app using xcodebuild against the CITestiOS.xcodeproj Debug scheme, producing an .xcarchive in .ci/artifacts. Use when you need to verify the app both compiles and can be packaged into a distributable archive. Does not run tests or lint — use dedicated test/lint agents for those.
+# Managed by Invarn — edits from the dashboard will regenerate this file.
+format_version: '1'
+meta:
+  cibuild.io:
+    stack: macos-sequoia-xcode
+    machine_type: standard
+workflows:
+  compile:
+    steps:
+      - script@1.0.0:
+          title: compile
+          inputs:
+            content: >-
+              echo '▸ INVARN_STEP:1:compile'
+
+              xcodebuild -project CITestiOS.xcodeproj -scheme CITestiOS -configuration Debug -destination
+              'generic/platform=iOS Simulator' build
+  archive:
+    steps:
+      - script@1.0.0:
+          title: archive
+          inputs:
+            content: >-
+              echo '▸ INVARN_STEP:1:archive'
+
+              xcodebuild -project CITestiOS.xcodeproj -scheme CITestiOS -configuration Debug -destination
+              'generic/platform=iOS' -archivePath .ci/artifacts/CITestiOS.xcarchive archive CODE_SIGNING_ALLOWED=NO
+  compile-and-archive:
+    steps:
+      - script@1.0.0:
+          title: compile
+          inputs:
+            content: >-
+              echo '▸ INVARN_STEP:1:compile'
+
+              xcodebuild -project CITestiOS.xcodeproj -scheme CITestiOS -configuration Debug -destination
+              'generic/platform=iOS Simulator' build
+      - script@1.0.0:
+          title: archive
+          inputs:
+            content: >-
+              echo '▸ INVARN_STEP:2:archive'
+
+              xcodebuild -project CITestiOS.xcodeproj -scheme CITestiOS -configuration Debug -destination
+              'generic/platform=iOS' -archivePath .ci/artifacts/CITestiOS.xcarchive archive CODE_SIGNING_ALLOWED=NO
