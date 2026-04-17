@@ -2,7 +2,7 @@ format_version: '1'
 
 meta:
   cibuild.io:
-    stack: macos-sequoia-xcode
+    stack: macos-xcode-26.4
     machine_type: performance
     platform: ios
 
